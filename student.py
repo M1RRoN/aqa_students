@@ -22,7 +22,7 @@ class Student(Person):
 
     def add_grade(self, subject_name, grade):
         if grade > Student.MAX_MARK:
-            raise GradeTooHighException
+            raise GradeTooHighException(grade)
 
         if subject_name in self.subjects:
             self.subjects[subject_name].append(grade)
