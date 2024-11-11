@@ -3,6 +3,10 @@ from datetime import datetime
 
 from faker import Faker
 
+from student_group import StudentGroup
+from subject import Subject
+from teacher import Teacher
+
 fake = Faker()
 
 
@@ -17,18 +21,15 @@ class Exam:
         return f"Exam: {self.subject}"
 
     def __repr__(self):
-        return (f"Exam(group={self.group}, date={self.date}, "
-                f"teacher={self.teacher}, subject={self.subject})")
+        return (f"Exam({self.group}, {self.date}, "
+                f"{self.teacher}, {self.subject})")
 
     def to_csv(self, filename):
-        with open(filename, mode='a', newline='', encoding='utf-8') as file:
+        with open(filename, mode='a', newline='\n', encoding='utf-8') as file:
             writer = csv.writer(file)
-            writer.writerow([self.group, self.date, self.teacher, self.subject])
-
-
-a = Exam("1s", datetime.now(), fake.name(), "Math")
-b = Exam("1s", datetime.now(), fake.name(), "Physic")
-
-print(a)
-a.to_csv("exam1")
-b.to_csv("exam1")
+            writer.writerow([
+                StudentGroup(fake.name(),fake.text(5)),
+                datetime.now(),
+                Teacher(fake.name(), fake.random_int(18, 60, 1)),
+                Subject(fake.text(6))
+            ])

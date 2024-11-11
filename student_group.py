@@ -1,11 +1,12 @@
-from student import Sasha
 from faker import Faker
 
+from student import Student
 
 fake = Faker('ru_RU')
 
+
 class StudentGroup:
-    def __init__(self, teacher: object, group_name: str):
+    def __init__(self, teacher, group_name):
         self.teacher = teacher
         self.group_name = group_name
         self.students = []
@@ -14,27 +15,20 @@ class StudentGroup:
         return f"Group: {self.group_name}"
 
     def __repr__(self):
-        return f"StudentGroup({self.teacher}, {self.group_name}, {self.students})"
+        return f"{self.__class__.__name__}({self.teacher}, {self.group_name}, {self.students})"
 
     def __contains__(self, student):
-        if student.name in self.students:
-            return True
-        else:
-            return False
+        return student in self.students
 
     def __add__(self, student):
         if student not in self.students:
-            self.students.append(student)
-            return f"{student} added to the group"
-        else:
-            return f"{student} is already in the group"
+            self.students.append(Student(fake.name(), fake.random_int(18, 60, 1)))
 
     def kick(self, student):
         if student in self.students:
             self.students.remove(student)
             return f"{student} removed from group"
-        else:
-            return f"{student} is not a member of the group"
+        return f"{student} is not a member of the group"
 
     def kick_all(self):
         self.students.clear()
@@ -48,41 +42,25 @@ class StudentGroup:
 
     def __eq__(self, other):
         if isinstance(other, StudentGroup):
-            return self.students.__len__() == other.students.__len__()
+            return len(self.students) == len(other.students)
         return False
 
     def __ne__(self, other):
         if isinstance(other, StudentGroup):
-            return self.students.__len__() != other.students.__len__()
+            return len(self.students) != len(other.students)
 
     def __lt__(self, other):
         if isinstance(other, StudentGroup):
-            return self.students.__len__() < other.students.__len__()
+            return len(self.students) < len(other.students)
 
     def __gt__(self, other):
         if isinstance(other, StudentGroup):
-            return self.students.__len__() > other.students.__len__()
+            return len(self.students) > len(other.students)
 
     def __le__(self, other):
         if isinstance(other, StudentGroup):
-            return self.students.__len__() <= other.students.__len__()
+            return len(self.students) <= len(other.students)
 
     def __ge__(self, other):
         if isinstance(other, StudentGroup):
-            return self.students.__len__() >= other.students.__len__()
-
-A = StudentGroup(fake.name(), "5S")
-B = StudentGroup(fake.name(), "3H")
-print(A.__add__(fake.name()))
-print(A.__add__(Sasha.name))
-print(A.__len__())
-print(Sasha in A)
-print(A.students)
-for i in A:
-    print(i)
-B.__add__(fake.name())
-B.__add__(fake.name())
-print(B.students)
-print(A == B)
-print(A.kick_all())
-print(A.students)
+            return len(self.students) >= len(other.students)
