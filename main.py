@@ -1,18 +1,18 @@
 from datetime import datetime
 
-from exam import Exam, fake
-from student import Student, GradeTooHighException
-from student_group import StudentGroup
-from ticket_generator import TicketGenerator
+from services.exam import Exam, fake
+from models.student import Student, GradeTooHighException
+from services.student_group import StudentGroup
+from services.ticket_generator import TicketGenerator
 
-#Test Exam
+# Test Exam
 a = Exam("1s", datetime.now(), fake.name(), "Math")
 b = Exam("1s", datetime.now(), fake.name(), "Physic")
 print(a)
 a.to_csv("exam1")
 b.to_csv("exam1")
 
-#Test Student
+# Test Student
 Sasha = Student("Sasha", 31)
 print(Sasha)
 Sasha.add_grade("Math", 4)
@@ -24,7 +24,7 @@ try:
 except GradeTooHighException as e:
     print(e)
 
-#Test StudentGroup
+# Test StudentGroup
 A = StudentGroup(fake.name(), "5S")
 B = StudentGroup(fake.name(), "3H")
 print(A)
@@ -44,6 +44,7 @@ print(A == B)
 print(A.kick_all())
 print(A.students)
 
-#Test TicketGenerator
-for ticket in TicketGenerator.generate_tickets(5):
+# Test TicketGenerator
+ticket_generator = TicketGenerator()
+for ticket in ticket_generator.generate_tickets(5):
     print(ticket)

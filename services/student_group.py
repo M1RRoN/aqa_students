@@ -1,6 +1,6 @@
 from faker import Faker
 
-from student import Student
+from models.student import Student
 
 fake = Faker('ru_RU')
 
@@ -22,13 +22,13 @@ class StudentGroup:
 
     def __add__(self, student):
         if student not in self.students:
-            self.students.append(Student(fake.name(), fake.random_int(18, 60, 1)))
+            self.students.append(student)
 
     def kick(self, student):
         if student in self.students:
             self.students.remove(student)
-            return f"{student} removed from group"
-        return f"{student} is not a member of the group"
+            return student
+        return None
 
     def kick_all(self):
         self.students.clear()
@@ -48,19 +48,24 @@ class StudentGroup:
     def __ne__(self, other):
         if isinstance(other, StudentGroup):
             return len(self.students) != len(other.students)
+        return True
 
     def __lt__(self, other):
         if isinstance(other, StudentGroup):
             return len(self.students) < len(other.students)
+        return False
 
     def __gt__(self, other):
         if isinstance(other, StudentGroup):
             return len(self.students) > len(other.students)
+        return False
 
     def __le__(self, other):
         if isinstance(other, StudentGroup):
             return len(self.students) <= len(other.students)
+        return False
 
     def __ge__(self, other):
         if isinstance(other, StudentGroup):
             return len(self.students) >= len(other.students)
+        return False
