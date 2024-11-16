@@ -6,18 +6,13 @@ print(a)
 # 2) Сгенерировать список на основе чисел от 1 до 1000.
 # Если число делится на 3 - положить результат деления в коллецию без изменений,
 # в противном случае положить число записанное дважды друг за другом
-b = []
-for i in range(1, 1001):
-    if i % 3 == 0:
-        b.append(i)
-    else:
-        b.append(int(str(i) * 2))
+b = [i if i % 3 == 0 else int(str(i) * 2) for i in range(1, 1001)]
 print(b)
 
 
 # 3) Посчитать кол-во пробелов в строке "  hel l o      world   "
 hel_wor = "  hel l o      world   "
-result = hel_wor.count(" ")
+result = sum(1 for i in hel_wor if i == " ")
 print(result)
 
 
@@ -32,12 +27,8 @@ print(res)
 
 # 5) Для каждого элемента строки  "hi, 3.44, 535  "
 # сгенерировать коллекцию кортежей вида (индекс, значение), (индекс, значение)
-z = []
 first_str = "hi, 3.44, 535  "
-second_str = first_str.split(",")
-h = [i.strip() for i in second_str]
-for i in h:
-    z.append((h.index(i), i))
+z = [(i, value) for i, value in enumerate([i.strip() for i in first_str.split(",")])]
 print(z)
 
 
@@ -51,14 +42,8 @@ print(res_list)
 
 # 7) Для чисел из промежутка [1, 20] сгенерировать коллекцию строк вида ("четное", "нечетное", "четное")
 t = [1, 20]
-r = []
-for i in range(t[0], t[1] + 1):
-    if i % 2 == 0:
-        r.append("четное")
-    else:
-        r.append("нечетное")
-res_tup = tuple(r)
-print(res_tup)
+r = tuple(["четное" if i % 2 == 0 else "нечетное" for i in range(t[0], t[1] + 1)])
+print(r)
 
 
 # 8) Найти все слова из строки, длина которых меньше 4
