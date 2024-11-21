@@ -1,0 +1,14 @@
+1. //h1[@id='Добро_пожаловать_в_Википедию,']
+2. //span[contains(text(), 'Скачать как PDF')]
+3. //img[contains(@alt, "фото 1890-х годов")]
+4. //tt[contains(text(), 'Редактировать')]
+5. //nav[@id='p-lang']//button[@class='uls-settings-trigger']
+6. //label[@for='wpName1']/span[@class='cdx-label__label__text']
+7. //input[@id='wpName1']
+8. //label[@for='wpPassword1']/span[@class='cdx-label__label__text']
+9. //input[@id='wpPassword1']
+10. //input[@name='wpRemember']
+11. //button[@id='wpLoginAttempt']
+12. //div[@class='cdx-field__control']/a
+13. Ссылки "Сбросить Ваш пароль?" нет
+14. //a[@id='mw-createaccount-join']
