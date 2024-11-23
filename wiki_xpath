@@ -1,9 +1,9 @@
-1. //h1[@id='Добро_пожаловать_в_Википедию,']
+1. //*[@id='Добро_пожаловать_в_Википедию,']
 2. //span[contains(text(), 'Скачать как PDF')]
-3. //img[contains(@alt, "фото 1890-х годов")]
+3. //span[@data-wikidata-property-id='P18']//img
 4. //tt[contains(text(), 'Редактировать')]
-5. //nav[@id='p-lang']//button[@class='uls-settings-trigger']
-6. //label[@for='wpName1']/span[@class='cdx-label__label__text']
+5. //*//button[contains(@class, 'uls-settings-trigger')]
+6. //label[@for='wpName1']//span[contains(@class, 'cdx-label__label__text')]
 7. //input[@id='wpName1']
 8. //label[@for='wpPassword1']/span[@class='cdx-label__label__text']
 9. //input[@id='wpPassword1']
