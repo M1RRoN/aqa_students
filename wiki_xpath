@@ -5,10 +5,10 @@
 5. //*//button[contains(@class, 'uls-settings-trigger')]
 6. //label[@for='wpName1']//span[contains(@class, 'cdx-label__label__text')]
 7. //input[@id='wpName1']
-8. //label[@for='wpPassword1']/span[@class='cdx-label__label__text']
+8. //label[@for='wpPassword1']//span[contains(@class, 'cdx-label__label__text')]
 9. //input[@id='wpPassword1']
 10. //input[@name='wpRemember']
 11. //button[@id='wpLoginAttempt']
-12. //div[@class='cdx-field__control']/a
+12. //div[contains(@class, 'cdx-field__control')]//a[text()='Помощь по входу']
 13. Ссылки "Сбросить Ваш пароль?" нет
 14. //a[@id='mw-createaccount-join']
