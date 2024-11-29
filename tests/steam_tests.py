@@ -1,6 +1,7 @@
 import pytest
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,8 +11,10 @@ BASE_URL = "https://store.steampowered.com/"
 LOGIN_BUTTON = (By.XPATH, "//*[@id='global_actions']//a[contains(@class, 'global_action_link')]")
 MAIN_PAGE_SEARCH = (By.XPATH, "//*[@id='store_nav_search_term']")
 LOGIN_BUTTON_IN_LOGIN_PAGE = (By.XPATH, "//div[@data-featuretarget='login']//button[@type='submit']")
-ERROR_IN_LOGIN_PAGE = (By.XPATH, "//*[@id='responsive_page_template_content']/div[3]/div[1]/div/div/div/div[2]/div/form/div[5]")
-LOGIN_FIELD_IN_LOGIN_PAGE = (By.XPATH, "//*[@id='responsive_page_template_content']/div[3]/div[1]/div/div/div/div[2]/div/form/div[1]/input")
+ERROR_IN_LOGIN_PAGE = (
+    By.XPATH, "//*[@id='responsive_page_template_content']/div[3]/div[1]/div/div/div/div[2]/div/form/div[5]")
+LOGIN_FIELD_IN_LOGIN_PAGE = (
+    By.XPATH, "//*[@id='responsive_page_template_content']/div[3]/div[1]/div/div/div/div[2]/div/form/div[1]/input")
 PASSWORD_FIELD_IN_LOGIN_PAGE = (By.XPATH, "//input[@type='password']")
 
 WAIT = 10
@@ -19,7 +22,9 @@ WAIT = 10
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome()
+    chrome_options = Options()
+    chrome_options.add_argument("--disable-popup-blocking")
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(BASE_URL)
     yield driver
     driver.quit()
@@ -44,11 +49,11 @@ def test_input_random_creds_in_login_page(driver):
     driver.find_element(*LOGIN_BUTTON).click()
     WebDriverWait(driver, WAIT).until(
         EC.presence_of_element_located(LOGIN_FIELD_IN_LOGIN_PAGE)
-    ).send_keys("account_name")
-    driver.find_element(*PASSWORD_FIELD_IN_LOGIN_PAGE).send_keys("random_password")
+    ).send_keys("account_namevbnvbn")
+    driver.find_element(*PASSWORD_FIELD_IN_LOGIN_PAGE).send_keys("random_passwordvbn")
     driver.find_element(*LOGIN_BUTTON_IN_LOGIN_PAGE).click()
-    error = WebDriverWait(driver, WAIT).until(
-        EC.text_to_be_present_in_element(ERROR_IN_LOGIN_PAGE,
-                                         "Пожалуйста, проверьте свой пароль и имя аккаунта")
+    WebDriverWait(driver, WAIT).until(
+        EC.element_to_be_clickable(LOGIN_BUTTON_IN_LOGIN_PAGE)
     )
-    assert error is not None, "Ошибка: текст ошибки не найден"
+    error = driver.find_element(*ERROR_IN_LOGIN_PAGE).text
+    assert error == "Пожалуйста, проверьте свой пароль и имя аккаунта и попробуйте снова.", "Ошибка: текст ошибки не совпадает"
