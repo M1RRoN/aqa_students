@@ -10,6 +10,7 @@ class ResultSearch(BasePage):
     SEARCH_RESULT_CONTAINER = (By.ID, "search_result_container")
     SORTING = (By.ID, "sort_by_trigger")
     SORT_PRICE_DESC = (By.ID, "Price_DESC")
+    SEARCH_RESULTS_XPATH = "//div[@id='search_resultsRows']//a[position() <= {quantity}]"
 
     def __init__(self, wait, base_url):
         super().__init__()
@@ -25,8 +26,9 @@ class ResultSearch(BasePage):
         WebDriverWait(self.driver, self.wait).until(EC.element_to_be_clickable(self.SORT_PRICE_DESC))
 
     def get_n_games(self, quantity):
+        formatted_xpath = self.SEARCH_RESULTS_XPATH.format(quantity=quantity)
         list_games = (WebDriverWait(self.driver, self.wait)
-                      .until(EC.presence_of_all_elements_located((By.XPATH, f"//div[@id='search_resultsRows']//a[position() <= {quantity}]"))))
+                      .until(EC.presence_of_all_elements_located((By.XPATH, formatted_xpath))))
         return list_games[:quantity]
 
     def wait_for_open(self):
