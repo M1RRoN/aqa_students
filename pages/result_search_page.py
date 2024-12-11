@@ -10,31 +10,24 @@ class ResultSearch(BasePage):
     SEARCH_RESULT_CONTAINER = (By.ID, "search_result_container")
     SORTING = (By.ID, "sort_by_trigger")
     SORT_PRICE_DESC = (By.ID, "Price_DESC")
-    SEARCH_RESULTS_XPATH = "//div[@id='search_resultsRows']//a[position() <= {quantity}]"
+    SEARCH_RESULTS_XPATH = (By.XPATH, "//*[@id='search_resultsRows']//a[position() <= {quantity}]")
 
-    def __init__(self, wait, base_url):
+    def __init__(self):
         super().__init__()
-        self.wait = wait
-        self.base_url = base_url
 
-    def text_input(self):
+    def input_text(self):
         element = WebDriverWait(self.driver, self.wait).until(EC.visibility_of_element_located(self.SEARCH_INPUT_IN_SEARCH_PAGE))
         return element.get_attribute("value")
 
-    def sorted_results_price_desc(self):
+    def sort_results_price_desc(self):
         WebDriverWait(self.driver, self.wait).until(EC.element_to_be_clickable(self.SORTING)).click()
         WebDriverWait(self.driver, self.wait).until(EC.element_to_be_clickable(self.SORT_PRICE_DESC))
 
     def get_n_games(self, quantity):
-        formatted_xpath = self.SEARCH_RESULTS_XPATH.format(quantity=quantity)
+        formatted_xpath = (self.SEARCH_RESULTS_XPATH[0], self.SEARCH_RESULTS_XPATH[1].format(quantity=quantity))
         list_games = (WebDriverWait(self.driver, self.wait)
-                      .until(EC.presence_of_all_elements_located((By.XPATH, formatted_xpath))))
-        return list_games[:quantity]
+                      .until(EC.presence_of_all_elements_located(formatted_xpath)))
+        return list_games
 
-    def wait_for_open(self):
-        assert self.driver.execute_script("return document.readyState") == "complete", \
-            (f"Страница не загрузилась полностью. "
-             f"Получено: {self.driver.execute_script('return document.readyState')}, ожидаемо: 'complete'")
-
-    def visibility_container(self):
+    def wait_visibility_container(self):
         return WebDriverWait(self.driver, self.wait).until(EC.visibility_of_element_located(self.SEARCH_RESULT_CONTAINER))

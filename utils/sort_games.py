@@ -1,4 +1,4 @@
-from utils.extract_price import extract_price_from_list
+from utils.price_utils import extract_price_from_list
 
 
 def parse_and_sort_games(filtered_games):
