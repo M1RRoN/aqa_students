@@ -7,7 +7,7 @@ from pages.result_search_page import ResultSearch
 
 @pytest.mark.parametrize("driver", ["en", "ru"], indirect=True)
 @pytest.mark.parametrize("game_name, quantity", [("The Witcher", 10), ("Fallout", 20)])
-def test_find_game(driver, game_name, quantity, wait, base_url):
+def test_find_game(driver, game_name, quantity, base_url):
     main_page = MainPage()
     main_page.wait_for_open()
     main_page.search_on_main_page(game_name)

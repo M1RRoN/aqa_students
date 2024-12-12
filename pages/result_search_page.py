@@ -12,11 +12,9 @@ class ResultSearch(BasePage):
     SORT_PRICE_DESC = (By.ID, "Price_DESC")
     SEARCH_RESULTS_XPATH = (By.XPATH, "//*[@id='search_resultsRows']//a[position() <= {quantity}]")
 
-    def __init__(self):
-        super().__init__()
-
     def input_text(self):
-        element = WebDriverWait(self.driver, self.wait).until(EC.visibility_of_element_located(self.SEARCH_INPUT_IN_SEARCH_PAGE))
+        element = WebDriverWait(self.driver, self.wait).until(
+            EC.visibility_of_element_located(self.SEARCH_INPUT_IN_SEARCH_PAGE))
         return element.get_attribute("value")
 
     def sort_results_price_desc(self):
@@ -30,4 +28,5 @@ class ResultSearch(BasePage):
         return list_games
 
     def wait_visibility_container(self):
-        return WebDriverWait(self.driver, self.wait).until(EC.visibility_of_element_located(self.SEARCH_RESULT_CONTAINER))
+        return WebDriverWait(self.driver, self.wait).until(
+            EC.visibility_of_element_located(self.SEARCH_RESULT_CONTAINER))

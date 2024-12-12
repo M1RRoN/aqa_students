@@ -14,16 +14,15 @@ class MainPage(BasePage):
     CHOOSE_LANGUAGE_BUTTON = (By.XPATH, "//div[@id='language_dropdown']//a[contains(@onclick, 'ChangeLanguage')"
                                         " and contains(@onclick, 'Language.{lang_enum}')][1]")
 
-    def __init__(self):
-        super().__init__()
-
     def search_on_main_page(self, game_name):
-        WebDriverWait(self.driver, self.wait).until(EC.visibility_of_element_located(self.SEARCH_INPUT)).send_keys(game_name)
+        WebDriverWait(self.driver, self.wait).until(EC.visibility_of_element_located(self.SEARCH_INPUT)).send_keys(
+            game_name)
         WebDriverWait(self.driver, self.wait).until(EC.element_to_be_clickable(self.SEARCH_BUTTON)).click()
 
     def get_language(self):
-        html_lang = WebDriverWait(self.driver, self.wait).until(EC.visibility_of_element_located(self.HTML)).get_attribute("lang")
-        return f"Language.{html_lang}"
+        html_lang = WebDriverWait(self.driver, self.wait).until(
+            EC.visibility_of_element_located(self.HTML)).get_attribute("lang")
+        return Language(html_lang)
 
     def click_on_language_button(self):
         WebDriverWait(self.driver, self.wait).until(EC.element_to_be_clickable(self.SET_LANGUAGE_BUTTON)).click()
