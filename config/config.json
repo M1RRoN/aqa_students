@@ -1,0 +1,9 @@
+{
+  "chrome_options": [
+    "--disable-popup-blocking",
+    "--start-maximized",
+    "--window-size=1920,1080"
+  ],
+  "base_url": "https://store.steampowered.com/",
+  "wait": 10
+}
