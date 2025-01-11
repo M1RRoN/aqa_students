@@ -5,7 +5,7 @@ class BasicAuth(BasePage):
     UNIQUE_LOC = None
 
     LOGIN_URL = "https://admin:admin@the-internet.herokuapp.com/basic_auth"
-    RESULT_LOC = "//*[@id='content']"
+    RESULT_LOC = "//*[@id='content']//p"
 
     def __init__(self, driver):
         super().__init__(driver)

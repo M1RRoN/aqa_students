@@ -6,6 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 class BasePage:
     UNIQUE_ELEMENT_LOC = None
 
+    JAVASCRIPT_ALERTS_LOC = "//a[@href='/javascript_alerts']"
+
     def __init__(self, browser):
         self.driver = browser
 

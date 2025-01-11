@@ -1,8 +1,10 @@
+import pytest
 from selenium.webdriver.common.by import By
 
 from pages.demoqa_iframes import Iframes
 
 
+@pytest.mark.parametrize("driver", ["chrome"], indirect=True)
 def test_iframes(driver):
     iframe = Iframes(driver)
     driver.get(iframe.URL)

@@ -134,3 +134,18 @@ class Browser:
             return attributes
         else:
             logger.error(f"Error: {response.status_code}")
+
+    def page_source(self):
+        logger.info("Get HTML")
+        return self.execute_script("return document.documentElement.outerHTML")
+
+    def find_elements_with_explicit_wait(self, locator, timeout=10):
+        logger.info("Find all elements")
+        try:
+            elements = WebDriverWait(self.driver, timeout).until(
+                EC.presence_of_all_elements_located(locator)
+            )
+            return elements
+        except Exception as e:
+            logger.error(f"Ошибка при поиске элементов: {e}")
+            return []

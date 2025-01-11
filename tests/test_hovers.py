@@ -1,6 +1,9 @@
+import pytest
+
 from pages.hovers import Hovers
 
 
+@pytest.mark.parametrize("driver", ["chrome"], indirect=True)
 def test_hovers(driver):
     hover = Hovers(driver)
     driver.get(hover.URL)
