@@ -1,151 +1,109 @@
-import requests
-from selenium.common import NoSuchElementException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
 import logging
 
 from selenium.webdriver.support.wait import WebDriverWait
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+from config.config_reader import ConfigReader
+from logger_config import setup_logger
+
+setup_logger()
 
 
 class Browser:
     def __init__(self, driver: WebDriver):
         self.driver = driver
+        self.logger = logging.getLogger(__name__)
+        self.timeout = ConfigReader().get("timeout")
+
+    def __getattr__(self, name):
+        if hasattr(self.driver, name):
+            return getattr(self.driver, name)
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def get(self, url):
-        logger.info("Open page")
+        self.logger.info(f"Open page {url}")
         self.driver.get(url)
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, self.timeout).until(
             lambda d: d.execute_script("return document.readyState") == "complete"
         )
 
     def refresh(self):
-        logger.info("Refresh current page")
+        self.logger.info("Refresh current page")
         self.driver.refresh()
 
     def close(self):
-        logger.info("Close current window")
+        self.logger.info("Close current window")
         self.driver.close()
 
     def quit(self):
-        logger.info("Quit browser session")
+        self.logger.info("Quit browser session")
         self.driver.quit()
 
     def get_cookie(self, name):
-        logger.info(f"Getting cookie {name}")
+        self.logger.info(f"Getting cookie {name}")
         self.driver.get_cookie(name)
 
     def add_cookie(self, cookie_dict):
-        logger.info(f"Adding cookie: {cookie_dict}")
+        self.logger.info(f"Adding cookie: {cookie_dict}")
         self.driver.add_cookie(cookie_dict)
 
     def get_current_url(self):
-        logger.info("Getting current URL")
-        return self.driver.current_url
+        current_url = self.driver.current_url
+        self.logger.info(f"Current URL: {current_url}")
+        return current_url
 
     def switch_to_alert(self):
-        logger.info(f"Switching to alert")
+        self.logger.info(f"Switching to alert")
+        WebDriverWait(self.driver, self.timeout).until(EC.alert_is_present())
         return self.driver.switch_to.alert
 
-    def alert_send_keys(self, *args):
+    def alert_send_keys(self, keys):
         alert = self.switch_to_alert()
-        logger.info(f"Sending keys in alert: {args}")
-        for arg in args:
-            alert.send_keys(arg)
+        self.logger.info(f"Sending keys in alert: {keys}")
+        alert.send_keys(keys)
         alert.accept()
 
-    def wait_for_alert(self, timeout=10):
-        logger.info(f"Waiting for alert to appear with timeout {timeout} seconds")
+    def wait_alert(self):
+        self.logger.info(f"Waiting for alert to appear with timeout {self.timeout} seconds")
         try:
-            WebDriverWait(self.driver, timeout).until(EC.alert_is_present())
-            logger.info("Alert is present")
+            WebDriverWait(self.driver, self.timeout).until(EC.alert_is_present())
         except Exception as e:
-            logger.error(f"Alert did not appear: {e}")
-
-    def find_element(self, by, locator):
-        try:
-            element = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((by, locator))
-            )
-            return element
-        except NoSuchElementException:
-            print(f"Element with locator: {locator} not found.")
-            return None
+            self.logger.error(f"Alert did not appear: {e}")
+            raise
 
     def alert_accept(self):
-        logger.info("Accept alert")
+        self.logger.info("Accept alert")
         try:
-            self.wait_for_alert()
+            self.wait_alert()
             alert = self.switch_to_alert()
             alert.accept()
-            logger.info("Alert successfuly accept")
+            self.logger.info("Alert successfuly accept")
         except Exception as e:
-            logger.error(f"Alert did not accept: {e}")
-
-    def get_text(self, locator, timeout=10):
-        logger.info(f"Get element text")
-        try:
-            element = WebDriverWait(self.driver, timeout).until(
-                EC.visibility_of_element_located((By.XPATH, locator))
-            )
-            return element.text
-        except Exception as e:
-            logger.error(f"Alert did not accept: {e}")
+            self.logger.error(f"Alert did not accept: {e}")
 
     def execute_script(self, script: str, *args):
         try:
-            logging.info(f"Executing script: {script} with arguments: {args}")
+            self.logger.info(f"Executing script: {script} with arguments: {args}")
 
             return self.driver.execute_script(script, *args)
         except Exception as e:
             logging.error(f"Error executing script: {e}")
             raise
 
-    def execute(self, command, params):
-        return self.driver.execute(command, params)
-
     def back(self):
+        self.logger.info("Return to previous page")
         self.driver.back()
 
-    def switch_to_frame(self, frame_loc):
-        logger.info("Switch to frame")
-        frame = self.driver.find_element(By.XPATH, frame_loc)
+    def switch_to_frame(self, frame_element):
+        self.logger.info("Switch to frame")
+        frame = self.driver.find_element(By.XPATH, frame_element.locator)
         self.driver.switch_to.frame(frame)
 
-    def all_elements(self, url, tag, attribute):
-        logger.info("Send request")
-        response = requests.get(url)
-        attributes = []
+    def get_page_source(self):
+        self.logger.info("Get HTML source of the page")
+        return self.driver.page_source
 
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "html.parser")
-
-            logger.info("Find tags")
-            images = soup.find_all(tag)
-            for img in images:
-                attributes.append(img.get(attribute))
-            return attributes
-        else:
-            logger.error(f"Error: {response.status_code}")
-
-    def page_source(self):
-        logger.info("Get HTML")
-        return self.execute_script("return document.documentElement.outerHTML")
-
-    def find_elements_with_explicit_wait(self, locator, timeout=10):
-        logger.info("Find all elements")
-        try:
-            elements = WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_all_elements_located(locator)
-            )
-            return elements
-        except Exception as e:
-            logger.error(f"Ошибка при поиске элементов: {e}")
-            return []
+    def refresh_page(self):
+        self.driver.refresh()

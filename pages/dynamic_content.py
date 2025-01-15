@@ -2,17 +2,14 @@ from elements.label import Label
 from pages.base_page import BasePage
 
 
-class DynamicContent(BasePage):
+class DynamicContentPage(BasePage):
     UNIQUE_ELEMENT_LOC = "//*[@id='content']//h3[contains(text(), 'Dynamic Content')]"
 
     DYNAMIC_IMAGE_LOC = "//*[@id='content']//img[contains(@src, 'Avatar-{id}')]"
-    URL = "https://the-internet.herokuapp.com/dynamic_content"
+    BUTTON_DYNAMIC_CONTENT_LOC = "//*[@id='content']//a[contains(text(), 'Dynamic Content')]"
 
     def __init__(self, driver):
         super().__init__(driver)
         self.name = "dynamic_content"
 
-        self.slider = Label(driver, 10, "Dynamic content -> Image", self.DYNAMIC_IMAGE_LOC)
-
-    def change_image(self):
-        self.driver.refresh()
+        self.slider = Label(driver,"Dynamic content -> Image", self.DYNAMIC_IMAGE_LOC)

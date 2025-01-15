@@ -6,7 +6,7 @@ from config.config_reader import ConfigReader
 
 
 @pytest.fixture
-def get_url():
+def url():
     config_reader = ConfigReader()
     return config_reader.get
 

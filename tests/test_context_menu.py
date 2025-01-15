@@ -1,13 +1,15 @@
 import pytest
+from selenium.webdriver.common.by import By
 
-from elements.web_element import WebElement
-from pages.context_menu import ContextMenu
+from config.config_reader import ConfigReader
+from pages.context_menu import ContextMenuPage
 
 
 @pytest.mark.parametrize("driver", ["chrome"], indirect=True)
 def test_context_menu(driver):
-    menu = ContextMenu(driver)
-    wb = WebElement(driver, 10, "hot-spot for alert", menu.UNIQUE_ELEMENT_LOC)
-    driver.get(menu.URL)
-    wb.right_click()
+    menu = ContextMenuPage(driver)
+    driver.get(url=ConfigReader().get("demoqa_url"))
+    menu.goto(By.XPATH, menu.BUTTON_CONTEXT_MENU_LOC)
+
+    menu.hot_spot.right_click()
     driver.alert_accept()

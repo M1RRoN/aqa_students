@@ -4,31 +4,33 @@ import pyautogui
 import pytest
 from selenium.webdriver.common.by import By
 
-from pages.upload import Upload
+from config.config_reader import ConfigReader
+from pages.upload import UploadPage
 
 
 @pytest.mark.parametrize("driver", ["chrome"], indirect=True)
 def test_upload_file(driver):
-    upload = Upload(driver)
-    driver.get(upload.URL)
+    upload = UploadPage(driver)
+    driver.get(ConfigReader().get("herokuapp_url"))
+    upload.goto(By.XPATH, upload.BUTTON_FILE_UPLOAD_LOC)
 
-    upload.upload.upload_file((By.XPATH, "//*[@id='file-upload']"), upload.FILE_PATH)
+    upload.upload_file.upload_file((By.XPATH, "//*[@id='file-upload']"), upload.FILE_PATH)
     file_name = driver.execute_script("return document.getElementById('file-upload').value;")
 
     assert file_name.endswith("SteamSetup.exe"), f"Ожидалось имя файла, но было '{file_name}'"
 
-    driver.find_element(By.XPATH, upload.BUTTON_UPLOAD).click()
+    driver.find_element(By.XPATH, upload.BUTTON_UPLOAD_LOC).click()
 
     assert "File Uploaded!" == driver.find_element(By.XPATH, "//h3").text, "Текст не совпадает"
-    assert "SteamSetup.exe" == driver.find_element(By.XPATH, upload.UPLOADED_FILES).text, "Название файла не совпадает"
+    assert "SteamSetup.exe" == driver.find_element(By.XPATH, upload.UPLOADED_FILES_LOC).text, "Название файла не совпадает"
 
 
 @pytest.mark.parametrize("driver", ["chrome"], indirect=True)
 def test_upload_dialog_window(driver):
-    upload = Upload(driver)
-    driver.get(upload.URL)
+    upload = UploadPage(driver)
+    driver.get(ConfigReader().get("herokuapp_url"))
 
-    file_input = driver.find_element(By.XPATH, upload.DRAG_AND_DROP)
+    file_input = driver.find_element(By.XPATH, upload.DRAG_AND_DROP_LOC)
     file_input.click()
     driver.find_element(By.XPATH, "//input[contains(@class, 'dz-hidden-input')]").send_keys(upload.FILE_PATH)
 
@@ -38,8 +40,8 @@ def test_upload_dialog_window(driver):
 
 @pytest.mark.parametrize("driver", ["chrome"], indirect=True)
 def test_drag_and_drop(driver):
-    upload = Upload(driver)
-    driver.get(upload.URL)
+    upload = UploadPage(driver)
+    driver.get(ConfigReader().get("herokuapp_url"))
 
     upload_area = driver.find_element(By.ID, "drag-drop-upload")
     rect = upload_area.rect

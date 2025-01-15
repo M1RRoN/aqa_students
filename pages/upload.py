@@ -4,24 +4,23 @@ from elements.input import Input
 from pages.base_page import BasePage
 
 
-class Upload(BasePage):
+class UploadPage(BasePage):
     UNIQUE_ELEMENT_LOC = "//*[@id='file-upload']"
 
-    URL = "https://the-internet.herokuapp.com/upload"
-    BUTTON_UPLOAD = "//*[@id='file-submit']"
-    UPLOADED_FILES = "//*[@id='uploaded-files']"
-    DRAG_AND_DROP = "//*[@id='drag-drop-upload']"
-    HIDDEN_INPUT = "//input[contains(@class, 'dz-hidden-input')]"
+    BUTTON_SELECT_FILE_LOC = "//*[@id='file-upload']"
+    BUTTON_UPLOAD_LOC = "//*[@id='file-submit']"
+    UPLOADED_FILES_LOC = "//*[@id='uploaded-files']"
+    DRAG_AND_DROP_LOC = "//*[@id='drag-drop-upload']"
+    HIDDEN_INPUT_LOC = "//input[contains(@class, 'dz-hidden-input')]"
+    BUTTON_FILE_UPLOAD_LOC = "//*[@id='content']//a[contains(text(), 'File Upload')]"
 
-    FILE_PATH = os.path.normpath(
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..", "test_files", "SteamSetup.exe"
-        )
-    )
 
     def __init__(self, driver):
         super().__init__(driver)
         self.name = "upload"
 
-        self.upload = Input(driver, 10, "Upload file page -> upload", self.UNIQUE_ELEMENT_LOC)
+        self.upload_file = Input(driver, "Upload file page -> upload", self.BUTTON_SELECT_FILE_LOC)
+
+    def upload_file(self, file_path):
+        normalized_path = os.path.normpath(file_path)
+        self.logger.info(f"Uploading file: {normalized_path}")

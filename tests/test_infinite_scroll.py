@@ -1,19 +1,15 @@
-import time
-
 import pytest
+from selenium.webdriver.common.by import By
 
-from pages.infinite_scroll import InfiniteScroll
+from config.config_reader import ConfigReader
+from pages.infinite_scroll import InfiniteScrollPage
 
 
 @pytest.mark.parametrize("driver", ["chrome"], indirect=True)
 def test_infinite_scroll(driver):
-    scroll = InfiniteScroll(driver, 30)
-    driver.get(scroll.URL)
-    paragraphs = scroll.find_paragraphs()
+    scroll = InfiniteScrollPage(driver, 30)
+    driver.get(ConfigReader().get("herokuapp_url"))
+    scroll.goto(By.XPATH, scroll.BUTTON_INFINITE_SCROLL_LOC)
+    paragraphs = scroll.scroll_to_paragraph()
 
-    while len(paragraphs) < scroll.age:
-        scroll.scroll_on_page()
-        time.sleep(1)
-        paragraphs = scroll.find_paragraphs()
-
-    assert len(paragraphs) == scroll.age, f"Ожидалось {scroll.age}, а найдено {len(paragraphs)}"
+    assert len(paragraphs) == scroll.age, f"Expected {scroll.age}, Actual {len(paragraphs)}"
