@@ -1,20 +1,20 @@
 from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 
 from selenium.webdriver.support.wait import WebDriverWait
 
 from config.config_reader import ConfigReader
+from elements.web_element import WebElement
 from logger_config import setup_logger
 
 setup_logger()
+logger = logging.getLogger(__name__)
 
 
 class Browser:
     def __init__(self, driver: WebDriver):
         self.driver = driver
-        self.logger = logging.getLogger(__name__)
         self.timeout = ConfigReader().get("timeout")
 
     def __getattr__(self, name):
@@ -22,70 +22,69 @@ class Browser:
             return getattr(self.driver, name)
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
+    @property
+    def selenium_driver(self):
+        return self.driver
+
     def get(self, url):
-        self.logger.info(f"Open page {url}")
-        self.driver.get(url)
-        WebDriverWait(self.driver, self.timeout).until(
-            lambda d: d.execute_script("return document.readyState") == "complete"
-        )
+        return self.selenium_driver.get(url)
 
     def refresh(self):
-        self.logger.info("Refresh current page")
+        logger.info("Refresh current page")
         self.driver.refresh()
 
     def close(self):
-        self.logger.info("Close current window")
+        logger.info("Close current window")
         self.driver.close()
 
     def quit(self):
-        self.logger.info("Quit browser session")
+        logger.info("Quit browser session")
         self.driver.quit()
 
     def get_cookie(self, name):
-        self.logger.info(f"Getting cookie {name}")
+        logger.info(f"Getting cookie {name}")
         self.driver.get_cookie(name)
 
     def add_cookie(self, cookie_dict):
-        self.logger.info(f"Adding cookie: {cookie_dict}")
+        logger.info(f"Adding cookie: {cookie_dict}")
         self.driver.add_cookie(cookie_dict)
 
     def get_current_url(self):
         current_url = self.driver.current_url
-        self.logger.info(f"Current URL: {current_url}")
+        logger.info(f"Current URL: {current_url}")
         return current_url
 
     def switch_to_alert(self):
-        self.logger.info(f"Switching to alert")
-        WebDriverWait(self.driver, self.timeout).until(EC.alert_is_present())
+        logger.info(f"Switching to alert")
+        self.wait_alert()
         return self.driver.switch_to.alert
 
     def alert_send_keys(self, keys):
         alert = self.switch_to_alert()
-        self.logger.info(f"Sending keys in alert: {keys}")
+        logger.info(f"Sending keys in alert: {keys}")
         alert.send_keys(keys)
         alert.accept()
 
     def wait_alert(self):
-        self.logger.info(f"Waiting for alert to appear with timeout {self.timeout} seconds")
+        logger.info(f"Waiting for alert to appear with timeout {self.timeout} seconds")
         try:
             WebDriverWait(self.driver, self.timeout).until(EC.alert_is_present())
         except Exception as e:
-            self.logger.error(f"Alert did not appear: {e}")
+            logger.error(f"Alert did not appear: {e}")
             raise
 
     def alert_accept(self):
-        self.logger.info("Accept alert")
-        try:
-            self.wait_alert()
-            alert = self.switch_to_alert()
-            alert.accept()
-            self.logger.info("Alert successfuly accept")
-        except Exception as e:
-            self.logger.error(f"Alert did not accept: {e}")
+        logger.info("Accept alert")
+
+        self.wait_alert()
+        alert = self.switch_to_alert()
+        alert.accept()
+        logger.info("Alert successfuly accept")
+
 
     def execute_script(self, script: str, *args):
         try:
-            self.logger.info(f"Executing script: {script} with arguments: {args}")
+            logger.info(f"Executing script: {script} with arguments: {args}")
 
             return self.driver.execute_script(script, *args)
         except Exception as e:
@@ -93,17 +92,23 @@ class Browser:
             raise
 
     def back(self):
-        self.logger.info("Return to previous page")
+        logger.info("Return to previous page")
         self.driver.back()
 
-    def switch_to_frame(self, frame_element):
-        self.logger.info("Switch to frame")
-        frame = self.driver.find_element(By.XPATH, frame_element.locator)
+    def switch_to_frame(self, frame_element: WebElement):
+        logger.info("Switch to frame")
+        frame = frame_element.presence_of_element_located()
         self.driver.switch_to.frame(frame)
 
-    def get_page_source(self):
-        self.logger.info("Get HTML source of the page")
-        return self.driver.page_source
+    def get_element_content(self, web_element):
+        logger.info("Get innerHTML of the specified element")
+        return web_element.get_attribute("innerHTML")
 
     def refresh_page(self):
+        logger.info("Refresh current page")
         self.driver.refresh()
+
+    def get_alert_text(self):
+        alert = self.switch_to_alert()
+        text = alert.text
+        return text

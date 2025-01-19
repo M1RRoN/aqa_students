@@ -1,8 +1,7 @@
-from selenium.webdriver import Keys
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import pyautogui
 
 from elements.button import Button
+from elements.label import Label
 from pages.base_page import BasePage
 
 
@@ -15,21 +14,16 @@ class BasicAuthPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
         self.name = "basic_auth"
-        self.button = Button(driver, "Main page -> Basic Auth page", self.BUTTON_BASIC_AUTH_LOC)
+        self.button = Button(driver, self.BUTTON_BASIC_AUTH_LOC, "Main page -> Basic Auth page")
+        self.result = Label(self.driver, locator=self.RESULT_LOC, description="Alert result")
 
-    def login(self, username: str, password: str):
-        """
+    def get_result_text(self):
+        text = self.result.get_text()
+        return text
 
-        этот код не работает, селениум не видит алерт, архитектуру оставлю, но решение кажется здесь толька авторизация через урл
+    def write_login_and_password_in_form(self, username, password):
+        pyautogui.write(username)
+        pyautogui.press("tab")
 
-        """
-        self.logger.info("Waiting for login alert to appear")
-        WebDriverWait(self.driver, self.timeout).until(EC.alert_is_present())
-        alert = self.driver.switch_to_alert()
-
-        self.logger.info("Login alert appeared, sending credentials using ActionChains")
-
-        alert.send_keys(f"{username}{Keys.TAB}{password}")
-        alert.accept()
-        self.logger.info("Credentials sent, accepting alert")
-        self.driver.alert_accept()
+        pyautogui.write(password)
+        pyautogui.press("enter")

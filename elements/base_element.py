@@ -10,81 +10,91 @@ from config.config_reader import ConfigReader
 
 
 class BaseElement:
-    def __init__(self, driver, description: str, locator: str):
+    def __init__(self, driver, locator, description: str):
         self.driver = driver
         self.timeout = ConfigReader().get("timeout")
         self.description = description
-        self.locator = locator
         self.logger = logging.getLogger(__name__)
+        if isinstance(locator, str):
+            if "/" in locator:
+                self.locator = (By.XPATH, locator)
+            else:
+                self.locator = (By.ID, locator)
+        else:
+            self.locator = locator
 
-    def find_element(self, by, locator):
-        try:
-            element = WebDriverWait(self.driver.driver, self.timeout).until(
-                EC.presence_of_element_located((by, locator))
-            )
-            return element
-        except NoSuchElementException:
-            print(f"Element with locator: {locator} not found.")
-            return None
-
-    def find_elements_with_explicit_wait(self, locator):
-        self.logger.info("Find all elements")
+    def visibility_of_element_located(self):
         try:
             elements = WebDriverWait(self.driver, self.timeout).until(
-                EC.presence_of_all_elements_located(locator)
+                EC.visibility_of_element_located(self.locator)
             )
             return elements
-        except Exception as e:
-            self.logger.error(f"Error while searching for elements: {e}")
-            return []
+        except NoSuchElementException:
+            self.logger.info(f"Element with locator: {self.locator} not found.")
 
-    def click(self, locator: tuple[str, str]):
+    def presence_of_element_located(self):
         try:
-            self.logger.info(f"Waiting for element {self.description} to be clickable")
-            element = WebDriverWait(self.driver, self.timeout).until(
-                EC.element_to_be_clickable(locator)
+            elements = WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_element_located(self.locator)
             )
-            self.logger.info(f"Clicking on element {self.description}")
+            return elements
+        except NoSuchElementException:
+            self.logger.info(f"Element with locator: {self.locator} not found.")
+
+    def presence_of_all_elements_located(self):
+        try:
+            elements = WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_all_elements_located(self.locator)
+            )
+            return elements
+        except NoSuchElementException:
+            self.logger.info(f"Element with locator: {self.locator} not found.")
+
+    def element_to_be_clickable(self):
+        try:
+            elements = WebDriverWait(self.driver, self.timeout).until(
+                EC.element_to_be_clickable(self.locator)
+            )
+            return elements
+        except NoSuchElementException:
+            self.logger.info(f"Element with locator: {self.locator} not found.")
+
+    def click(self):
+        try:
+            self.logger.info(f"Waiting for button '{self.description}' to be clickable")
+            element = WebDriverWait(self.driver, self.timeout).until(
+                EC.element_to_be_clickable(self.locator)
+            )
+            self.logger.info(f"Clicking on button '{self.description}'")
             element.click()
         except Exception as e:
-            self.logger.error(f"Failed to click on element {self.description}: {e}")
+            self.logger.error(f"Failed to click on button '{self.description}': {e}")
             raise
 
-    def get_text(self, by, locator):
+    def get_text(self):
         element = WebDriverWait(self.driver, self.timeout).until(
-            EC.visibility_of_element_located((by, locator))
+            EC.presence_of_element_located(self.locator)
         )
         return element.text
 
-    def get_attribute(self):
-        raise NotImplementedError("This method must be implemented in a subclass or later.")
-
-    def is_enabled(self):
-        raise NotImplementedError("This method must be implemented in a subclass or later.")
+    def get_attribute(self, attribute):
+        element = WebDriverWait(self.driver, self.timeout).until(
+            EC.visibility_of_element_located(self.locator)
+        )
+        return element.get_attribute(attribute)
 
     def right_click(self):
         self.logger.info(f"Attempting to right-click on element: {self.description}")
         try:
             element = WebDriverWait(self.driver, self.timeout).until(
-                EC.visibility_of_element_located((By.XPATH, self.locator))
+                EC.visibility_of_element_located(self.locator)
             )
             actions = ActionChains(self.driver)
+            actions.move_to_element(element)
             actions.context_click(element).perform()
         except Exception as e:
             self.logger.error(f"Error during right-click on element {self.description}: {e}")
             raise
 
-    def get_all_elements(self, driver, url, tag, attribute):
-        self.logger.info("Open page using driver")
-        driver.get(url)
-
-        self.logger.info(f"Find all {tag} tags")
-        elements = driver.find_elements(By.TAG_NAME, tag)
-
-        attributes = []
-        for element in elements:
-            attr_value = element.get_attribute(attribute)
-            if attr_value:
-                attributes.append(attr_value)
-
-        return attributes
+    def scroll_into_view(self, element):
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)

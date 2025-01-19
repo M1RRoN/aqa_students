@@ -5,37 +5,48 @@ import pytest
 from selenium.webdriver.common.by import By
 
 from config.config_reader import ConfigReader
+from pages.main_page import MainPage
 from pages.upload import UploadPage
 
 
-@pytest.mark.parametrize("driver", ["chrome"], indirect=True)
-def test_upload_file(driver):
-    upload = UploadPage(driver)
-    driver.get(ConfigReader().get("herokuapp_url"))
-    upload.goto(By.XPATH, upload.BUTTON_FILE_UPLOAD_LOC)
+def test_upload_file(chrome_driver):
+    main_page = MainPage(chrome_driver)
+    upload_page = UploadPage(chrome_driver)
+    chrome_driver.get(ConfigReader().get("herokuapp_url"))
+    main_page.go_to_file_upload_page()
 
-    upload.upload_file.upload_file((By.XPATH, "//*[@id='file-upload']"), upload.FILE_PATH)
-    file_name = driver.execute_script("return document.getElementById('file-upload').value;")
+    upload_page.upload_file()
+    file_name = chrome_driver.execute_script("return document.getElementById('file-upload').value;")
 
-    assert file_name.endswith("SteamSetup.exe"), f"Ожидалось имя файла, но было '{file_name}'"
+    assert file_name.endswith("SteamSetup.exe"), f"Expected: {file_name.endswith("SteamSetup.exe")}, Actual: '{file_name}'"
 
-    driver.find_element(By.XPATH, upload.BUTTON_UPLOAD_LOC).click()
+    upload_page.click_on_upload_button()
 
-    assert "File Uploaded!" == driver.find_element(By.XPATH, "//h3").text, "Текст не совпадает"
-    assert "SteamSetup.exe" == driver.find_element(By.XPATH, upload.UPLOADED_FILES_LOC).text, "Название файла не совпадает"
+    expected_result_text = "File Uploaded!"
+    result_text = upload_page.get_result_text_after_upload_file()
+    expected_file_name = "SteamSetup.exe"
+    result_file_name = upload_page.get_file_name_after_upload()
+
+    assert expected_result_text == result_text, f"Expected text: {expected_result_text} Actual text: {result_text}"
+    assert expected_file_name == result_file_name, f"Expected file name: {expected_file_name} Actual file name: {result_file_name}"
 
 
-@pytest.mark.parametrize("driver", ["chrome"], indirect=True)
-def test_upload_dialog_window(driver):
-    upload = UploadPage(driver)
-    driver.get(ConfigReader().get("herokuapp_url"))
+def test_upload_dialog_window(chrome_driver):
+    main_page = MainPage(chrome_driver)
+    upload_page = UploadPage(chrome_driver)
+    chrome_driver.get(ConfigReader().get("herokuapp_url"))
+    main_page.go_to_file_upload_page()
 
-    file_input = driver.find_element(By.XPATH, upload.DRAG_AND_DROP_LOC)
-    file_input.click()
-    driver.find_element(By.XPATH, "//input[contains(@class, 'dz-hidden-input')]").send_keys(upload.FILE_PATH)
+    upload_page.click_on_drag_and_drop()
+    upload_page.send_keys_into_hidden_input()
 
-    assert "SteamSetup.exe" == driver.find_element(By.XPATH, "(//div[contains(@class, 'dz-filename')]//span)[1]").text
-    assert "✔" == driver.find_element(By.XPATH, "(//div[contains(@class, 'dz-success-mark')]//span)[2]").text
+    expected_file_name = "SteamSetup.exe"
+    result_file_name = upload_page.get_result_file_name_after_drag_and_drop()
+    expected_mark = "✔"
+    result_mark = upload_page.get_success_mark()
+
+    assert expected_file_name == result_file_name, f"Expected file name: {expected_file_name} Actual file name: {result_file_name}"
+    assert expected_mark == result_mark, f"Expected mark: {expected_mark} Actual mark: {result_mark}"
 
 
 @pytest.mark.parametrize("driver", ["chrome"], indirect=True)

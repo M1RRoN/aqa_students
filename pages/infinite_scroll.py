@@ -1,6 +1,4 @@
-from selenium.webdriver.common.by import By
-
-from elements.button import Button
+from browser.browser import logger
 from elements.web_element import WebElement
 from pages.base_page import BasePage
 
@@ -8,25 +6,22 @@ from pages.base_page import BasePage
 class InfiniteScrollPage(BasePage):
     UNIQUE_ELEMENT_LOC = "//*[@id='content']//h3[contains(text(), 'Infinite Scroll')]"
 
-    BUTTON_INFINITE_SCROLL_LOC = "//*[@id='content']//a[contains(text(), 'Infinite Scroll')]"
     PARAGRAPH_LOC = "//*[@id='content']//div[contains(@class, 'jscroll-added')]"
 
     def __init__(self, driver, age):
         super().__init__(driver)
         self.name = "infinite_scroll"
 
-        self.scroll = WebElement(driver, "Infinite scroll page -> scroll", self.UNIQUE_ELEMENT_LOC)
-        self.button = Button(self.driver, "Main page -> Infinite Scroll page", self.BUTTON_INFINITE_SCROLL_LOC)
-        self.age = age
+        self.scroll = WebElement(driver, self.UNIQUE_ELEMENT_LOC, "Infinite scroll page -> scroll")
+        self.paragraph = WebElement(driver, self.PARAGRAPH_LOC, "Infinite scroll page -> paragraph")
 
-    def scroll_to_paragraph(self):
-        paragraphs = self.driver.find_elements(By.XPATH, self.PARAGRAPH_LOC)
+    def scroll_to_paragraph(self, age):
+        paragraphs = self.paragraph.presence_of_all_elements_located()
 
-        while len(paragraphs) < self.age:
-            self.logger.info(f"Current paragraph count: {len(paragraphs)}. Target: {self.age}")
+        while len(paragraphs) < age:
             last_paragraph = paragraphs[-1]
-            self.driver.execute_script("arguments[0].scrollIntoView(true);", last_paragraph)
-            paragraphs = self.driver.find_elements(By.XPATH, self.PARAGRAPH_LOC)
+            self.paragraph.scroll_into_view(last_paragraph)
+            paragraphs = self.paragraph.presence_of_all_elements_located()
 
-        self.logger.info(f"Scrolled to {len(paragraphs)} paragraphs!")
+        logger.info(f"Scrolled to {len(paragraphs)} paragraphs!")
         return paragraphs

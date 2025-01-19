@@ -22,25 +22,24 @@ class BrowserName(StrEnum):
 
 class BrowserFactory:
     @staticmethod
-    def get_browser(browser_name: str):
-        browser_name = browser_name.lower()
+    def get_browser(browser_name: BrowserName):
         headless = ConfigReader().get("headless")
 
         def apply_headless(options):
             if headless:
                 options.add_argument("--headless")
 
-        if browser_name == "chrome":
+        if browser_name == BrowserName.CHROME:
             options = ChromeOptions()
             apply_headless(options)
             return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
-        elif browser_name == "firefox":
+        elif browser_name == BrowserName.FIREFOX:
             options = FirefoxOptions()
             apply_headless(options)
             return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=options)
 
-        elif browser_name == "edge":
+        elif browser_name == BrowserName.EDGE:
             options = EdgeOptions()
             apply_headless(options)
             return webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)

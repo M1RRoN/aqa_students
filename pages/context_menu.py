@@ -6,11 +6,22 @@ from pages.base_page import BasePage
 class ContextMenuPage(BasePage):
     UNIQUE_ELEMENT_LOC = "//*[@id='hot-spot']"
 
+    HOT_SPOT_LOC = "//*[@id='hot-spot']"
     BUTTON_CONTEXT_MENU_LOC = "//*[@id='content']//a[contains(text(), 'Context Menu')]"
 
     def __init__(self, driver):
         super().__init__(driver)
         self.name = "context_menu"
-        self.button = Button(driver, "Main page -> Context Menu page", self.BUTTON_CONTEXT_MENU_LOC)
+        self.button = Button(driver, self.BUTTON_CONTEXT_MENU_LOC, "Main page -> Context Menu page")
 
-        self.hot_spot = WebElement(driver, "hot-spot for alert", self.UNIQUE_ELEMENT_LOC)
+        self.hot_spot = WebElement(driver, self.HOT_SPOT_LOC, "hot-spot for alert")
+
+    def accept_alert_after_right_click(self):
+        self.driver.alert_accept()
+
+    def get_alert_text_after_right_click(self):
+        text = self.driver.get_alert_text()
+        return text
+
+    def click_on_hot_spot(self):
+        self.hot_spot.right_click()

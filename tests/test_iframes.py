@@ -1,21 +1,21 @@
-import pytest
-from selenium.webdriver.common.by import By
-
 from config.config_reader import ConfigReader
 from pages.demoqa_iframes import IframesPage
+from pages.main_page import MainPage
 
 
-@pytest.mark.parametrize("driver", ["chrome"], indirect=True)
-def test_iframes(driver):
-    iframe = IframesPage(driver)
-    driver.get(url=ConfigReader().get("demoqa_url"))
-    iframe.goto(By.XPATH, iframe.ALERTS_FRAME_WINDOWS_LOC)
-    iframe.goto(By.XPATH, iframe.MENU_NESTED_FRAMES_LOC)
+def test_iframes(chrome_driver):
+    main_page = MainPage(chrome_driver)
+    iframe_page = IframesPage(chrome_driver)
+    chrome_driver.get(url=ConfigReader().get("demoqa_url"))
+    main_page.go_to_alerts_frame_windows_page()
+    iframe_page.go_to_nested_frames()
 
-    driver.switch_to_frame(iframe.parent_frame)
-    text = iframe.get_text_frame(iframe.parent_frame)
-    assert text == "Parent frame"
+    iframe_page.switch_to_parent_frame()
+    text = iframe_page.get_text_frame()
+    expected_text = "Parent frame"
+    assert expected_text == text, f"Expected: {expected_text} Actual: {text}"
 
-    driver.switch_to_frame(iframe.child_frame)
-    text = iframe.get_text_frame(iframe.child_frame)
-    assert  text == "Child Iframe"
+    iframe_page.switch_to_child_frame()
+    text = iframe_page.get_text_frame()
+    expected_text = "Child Iframe"
+    assert expected_text == text, f"Expected: {expected_text} Actual: {text}"
