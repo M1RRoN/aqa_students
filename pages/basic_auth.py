@@ -15,7 +15,7 @@ class BasicAuthPage(BasePage):
         super().__init__(driver)
         self.name = "basic_auth"
         self.button = Button(driver, self.BUTTON_BASIC_AUTH_LOC, "Main page -> Basic Auth page")
-        self.result = Label(self.driver, locator=self.RESULT_LOC, description="Alert result")
+        self.result = Label(self.browser, locator=self.RESULT_LOC, description="Alert result")
 
     def get_result_text(self):
         text = self.result.get_text()

@@ -1,3 +1,4 @@
+from selenium.common import NoSuchElementException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 import logging
@@ -5,7 +6,7 @@ import logging
 from selenium.webdriver.support.wait import WebDriverWait
 
 from config.config_reader import ConfigReader
-from elements.web_element import WebElement
+from elements.base_element import BaseElement
 from logger_config import setup_logger
 
 setup_logger()
@@ -13,21 +14,18 @@ logger = logging.getLogger(__name__)
 
 
 class Browser:
-    def __init__(self, driver: WebDriver):
-        self.driver = driver
-        self.timeout = ConfigReader().get("timeout")
+    timeout = ConfigReader().get("timeout")
 
-    def __getattr__(self, name):
-        if hasattr(self.driver, name):
-            return getattr(self.driver, name)
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+    def __init__(self, driver: WebDriver):
+        self._driver = driver
 
     @property
-    def selenium_driver(self):
-        return self.driver
+    def driver(self):
+        return self._driver
 
     def get(self, url):
-        return self.selenium_driver.get(url)
+        logging.info(f"Open URL: {url}")
+        return self.driver.get(url)
 
     def refresh(self):
         logger.info("Refresh current page")
@@ -50,8 +48,8 @@ class Browser:
         self.driver.add_cookie(cookie_dict)
 
     def get_current_url(self):
+        logger.info("Get current URL")
         current_url = self.driver.current_url
-        logger.info(f"Current URL: {current_url}")
         return current_url
 
     def switch_to_alert(self):
@@ -81,12 +79,14 @@ class Browser:
         alert.accept()
         logger.info("Alert successfuly accept")
 
-
-    def execute_script(self, script: str, *args):
+    def execute_script(self, script: str, **kwargs):
         try:
-            logger.info(f"Executing script: {script} with arguments: {args}")
+            logger.info(f"Executing script: {script} with arguments: {kwargs}")
 
-            return self.driver.execute_script(script, *args)
+            formatted_script = script.format(**kwargs)
+
+            return self.driver.execute_script(formatted_script)
+
         except Exception as e:
             logging.error(f"Error executing script: {e}")
             raise
@@ -95,20 +95,27 @@ class Browser:
         logger.info("Return to previous page")
         self.driver.back()
 
-    def switch_to_frame(self, frame_element: WebElement):
+    def switch_to_frame(self, frame_element: BaseElement):
         logger.info("Switch to frame")
         frame = frame_element.presence_of_element_located()
         self.driver.switch_to.frame(frame)
-
-    def get_element_content(self, web_element):
-        logger.info("Get innerHTML of the specified element")
-        return web_element.get_attribute("innerHTML")
 
     def refresh_page(self):
         logger.info("Refresh current page")
         self.driver.refresh()
 
     def get_alert_text(self):
+        logging.info("Switch to alert")
         alert = self.switch_to_alert()
+        logging.info("Get alert text")
         text = alert.text
         return text
+
+    def presence_of_all_elements_located(self, locator):
+        try:
+            elements = WebDriverWait(self.driver, self.timeout).until(
+                EC.presence_of_all_elements_located(locator)
+            )
+            return elements
+        except NoSuchElementException:
+            logger.info(f"Element with locator: {locator} not found.")

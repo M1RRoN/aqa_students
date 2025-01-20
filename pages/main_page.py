@@ -16,25 +16,25 @@ class MainPage(BasePage):
     BUTTON_FILE_UPLOAD_LOC = "//*[@id='content']//a[contains(text(), 'File Upload')]"
 
 
-    def __init__(self, driver):
-        super().__init__(driver)
+    def __init__(self, browser):
+        super().__init__(browser)
         self.name = "main_page"
 
-        self.button_js_alerts = Button(driver, self.BUTTON_JAVASCRIPT_ALERTS_LOC, "Main page -> Alerts page")
-        self.button_basic_auth = Button(driver, self.BUTTON_BASIC_AUTH_LOC, "Main page -> Basic Auth page")
-        self.button_context_menu = Button(driver, self.BUTTON_CONTEXT_MENU_LOC,
+        self.button_js_alerts = Button(browser, self.BUTTON_JAVASCRIPT_ALERTS_LOC, "Main page -> Alerts page")
+        self.button_basic_auth = Button(browser, self.BUTTON_BASIC_AUTH_LOC, "Main page -> Basic Auth page")
+        self.button_context_menu = Button(browser, self.BUTTON_CONTEXT_MENU_LOC,
                                           "Main page -> Context Menu page")
-        self.button_dynamic_content = Button(driver, self.BUTTON_DYNAMIC_CONTENT_LOC,
+        self.button_dynamic_content = Button(browser, self.BUTTON_DYNAMIC_CONTENT_LOC,
                                              "Main page -> Dynamic Content page")
-        self.button_horizontal_slider = Button(driver, self.BUTTON_HORIZONTAL_SLIDER_LOC,
+        self.button_horizontal_slider = Button(browser, self.BUTTON_HORIZONTAL_SLIDER_LOC,
                                                "Main page -> Horizontal Slider page")
-        self.button_hovers = Button(driver, self.BUTTON_HOVERS_PAGE_LOC,
+        self.button_hovers = Button(browser, self.BUTTON_HOVERS_PAGE_LOC,
                                          "Main page -> Hovers page")
-        self.button_alerts_frame_windows = Button(driver, self.BUTTON_ALERTS_FRAME_WINDOWS_LOC,
+        self.button_alerts_frame_windows = Button(browser, self.BUTTON_ALERTS_FRAME_WINDOWS_LOC,
                                                   "Main page -> Alerts, Frame & Windows page")
-        self.button_infinite_scroll = Button(driver, self.BUTTON_INFINITE_SCROLL_LOC,
+        self.button_infinite_scroll = Button(browser, self.BUTTON_INFINITE_SCROLL_LOC,
                                              "Main page -> Infinite Scroll page")
-        self.button_file_upload = Button(driver, self.BUTTON_FILE_UPLOAD_LOC, "Main page -> File Upload page")
+        self.button_file_upload = Button(browser, self.BUTTON_FILE_UPLOAD_LOC, "Main page -> File Upload page")
 
     def go_to_js_alerts_page(self):
         self.button_js_alerts.click()

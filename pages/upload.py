@@ -10,34 +10,33 @@ from pages.base_page import BasePage
 class UploadPage(BasePage):
     UNIQUE_ELEMENT_LOC = "//*[@id='file-upload']"
 
-    BUTTON_SELECT_FILE_LOC = "//*[@id='file-upload']"
-    BUTTON_UPLOAD_LOC = "//*[@id='file-submit']"
-    UPLOADED_FILES_LOC = "//*[@id='uploaded-files']"
+    BUTTON_SELECT_FILE_LOC = "file-upload"
+    BUTTON_UPLOAD_LOC = "file-submit"
+    UPLOADED_FILES_LOC = "uploaded-files"
     RESULT_TEXT_AFTER_UPLOAD = "//h3"
 
-    DRAG_AND_DROP_LOC = "//*[@id='drag-drop-upload']"
+    DRAG_AND_DROP_LOC = "drag-drop-upload"
     HIDDEN_INPUT_LOC = "//input[contains(@class, 'dz-hidden-input')]"
     RESULT_FILE_NAME_AFTER_DRAG_AND_DROP_LOC = "(//div[contains(@class, 'dz-filename')]//span)[1]"
     SUCCESS_MARK_LOC = "(//div[contains(@class, 'dz-success-mark')]//span)[2]"
 
-    def __init__(self, driver):
-        super().__init__(driver)
+    def __init__(self, browser):
+        super().__init__(browser)
         self.name = "upload"
-        self.path = os.path.join("test_files", "SteamSetup.exe")
 
-        self.button_select_file = Input(driver, self.BUTTON_SELECT_FILE_LOC, "Upload file page -> Select file")
-        self.button_upload = Button(driver, self.BUTTON_UPLOAD_LOC, "Upload File page -> Button upload")
-        self.result_text = WebElement(driver, self.RESULT_TEXT_AFTER_UPLOAD, "Result text after upload")
-        self.file_name = WebElement(driver, self.UPLOADED_FILES_LOC, "File name after upload")
+        self.button_select_file = Input(browser, self.BUTTON_SELECT_FILE_LOC, "Upload file page -> Select file")
+        self.button_upload = Button(browser, self.BUTTON_UPLOAD_LOC, "Upload File page -> Button upload")
+        self.result_text = WebElement(browser, self.RESULT_TEXT_AFTER_UPLOAD, "Result text after upload")
+        self.file_name = WebElement(browser, self.UPLOADED_FILES_LOC, "File name after upload")
 
-        self.drag_and_drop = WebElement(driver, self.DRAG_AND_DROP_LOC, "Upload file page -> Drag and drop")
-        self.hidden_input = Input(driver, self.HIDDEN_INPUT_LOC, "Upload file page -> Hidden input")
-        self.file_name_drag_and_drop = WebElement(driver, self.RESULT_FILE_NAME_AFTER_DRAG_AND_DROP_LOC,
+        self.drag_and_drop = WebElement(browser, self.DRAG_AND_DROP_LOC, "Upload file page -> Drag and drop")
+        self.hidden_input = Input(browser, self.HIDDEN_INPUT_LOC, "Upload file page -> Hidden input")
+        self.file_name_drag_and_drop = WebElement(browser, self.RESULT_FILE_NAME_AFTER_DRAG_AND_DROP_LOC,
                                                   "Result file name after drag and drop")
-        self.success_mark = WebElement(driver, self.SUCCESS_MARK_LOC, "Success mark after drag and drop")
+        self.success_mark = WebElement(browser, self.SUCCESS_MARK_LOC, "Success mark after drag and drop")
 
-    def upload_file(self):
-        normalized_path = os.path.abspath(self.path)
+    def upload_file(self, path):
+        normalized_path = os.path.abspath(path)
         logger.info(f"Uploading file: {normalized_path}")
         self.button_select_file.element_to_be_clickable()
         self.button_select_file.send_keys(normalized_path)
@@ -57,9 +56,9 @@ class UploadPage(BasePage):
         drag_and_drop = self.drag_and_drop.element_to_be_clickable()
         drag_and_drop.click()
 
-    def send_keys_into_hidden_input(self):
-        path = os.path.abspath(self.path)
-        self.hidden_input.send_keys(path)
+    def send_path_into_hidden_input(self, file_path):
+        path = os.path.abspath(file_path)
+        self.hidden_input.send_keys_into_hidden_input(path)
 
     def get_result_file_name_after_drag_and_drop(self):
         text = self.file_name_drag_and_drop.get_text()

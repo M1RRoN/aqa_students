@@ -8,20 +8,19 @@ class InfiniteScrollPage(BasePage):
 
     PARAGRAPH_LOC = "//*[@id='content']//div[contains(@class, 'jscroll-added')]"
 
-    def __init__(self, driver, age):
-        super().__init__(driver)
+    def __init__(self, browser, age):
+        super().__init__(browser)
         self.name = "infinite_scroll"
 
-        self.scroll = WebElement(driver, self.UNIQUE_ELEMENT_LOC, "Infinite scroll page -> scroll")
-        self.paragraph = WebElement(driver, self.PARAGRAPH_LOC, "Infinite scroll page -> paragraph")
+        self.scroll = WebElement(browser, self.UNIQUE_ELEMENT_LOC, "Infinite scroll page -> scroll")
+        self.paragraph = WebElement(browser, self.PARAGRAPH_LOC, "Infinite scroll page -> paragraph")
 
     def scroll_to_paragraph(self, age):
-        paragraphs = self.paragraph.presence_of_all_elements_located()
+        paragraphs = self.browser.presence_of_all_elements_located(self.paragraph.locator)
 
         while len(paragraphs) < age:
-            last_paragraph = paragraphs[-1]
-            self.paragraph.scroll_into_view(last_paragraph)
-            paragraphs = self.paragraph.presence_of_all_elements_located()
+            self.paragraph.scroll_into_view_to_last_element(True)
+            paragraphs = self.browser.presence_of_all_elements_located(self.paragraph.locator)
 
         logger.info(f"Scrolled to {len(paragraphs)} paragraphs!")
         return paragraphs

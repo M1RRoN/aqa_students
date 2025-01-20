@@ -14,7 +14,7 @@ def get_config():
 @pytest.fixture(scope="function")
 def driver(request):
     browser_name = request.param
-    web_driver = BrowserFactory().get_browser(browser_name=browser_name)
+    web_driver = BrowserFactory.get_browser(browser_name=browser_name)
     browser = Browser(driver=web_driver)
     yield browser
     browser.quit()
@@ -22,7 +22,7 @@ def driver(request):
 
 @pytest.fixture()
 def chrome_driver():
-    web_driver = BrowserFactory().get_browser(browser_name=BrowserName.CHROME)
+    web_driver = BrowserFactory.get_browser(browser_name=BrowserName.CHROME)
     browser = Browser(driver=web_driver)
     yield browser
     browser.quit()

@@ -14,8 +14,8 @@ class SliderAttributes:
 
 class Slider(BaseElement):
     def scroll_slider(self, move_offset):
-        slider = self.presence_of_element_located()
-        actions = ActionChains(self.driver)
+        slider = self.visibility_of_element_located()
+        actions = ActionChains(self.browser.driver)
         slider.send_keys(Keys.NULL)
         for _ in range(move_offset * 2):
             actions.send_keys(Keys.ARROW_RIGHT).perform()
