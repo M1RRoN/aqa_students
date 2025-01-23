@@ -20,4 +20,4 @@ def test_slider(driver):
     slider.scroll_slider_to_value(target_value)
     current_value = slider.get_slider_value()
 
-    assert current_value == target_value
+    assert current_value == target_value, f"Expected: {current_value} Actual: {target_value}"

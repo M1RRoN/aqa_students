@@ -33,6 +33,7 @@ class BaseElement:
             return element
         except TimeoutException:
             self.logger.error(f"Timeout while waiting for element with locator: {self.locator}")
+            raise
 
     def presence_of_element_located(self):
         try:
@@ -40,8 +41,9 @@ class BaseElement:
                 EC.presence_of_element_located(self.locator)
             )
             return elements
-        except NoSuchElementException:
-            self.logger.info(f"Element with locator: {self.locator} not found.")
+        except TimeoutException:
+            self.logger.error(f"Timeout while waiting for element with locator: {self.locator}")
+            raise
 
     def element_to_be_clickable(self):
         try:
@@ -49,8 +51,9 @@ class BaseElement:
                 EC.element_to_be_clickable(self.locator)
             )
             return elements
-        except NoSuchElementException:
-            self.logger.info(f"Element with locator: {self.locator} not found.")
+        except TimeoutException:
+            self.logger.error(f"Timeout while waiting for element with locator: {self.locator}")
+            raise
 
     def click(self):
         try:
@@ -69,9 +72,7 @@ class BaseElement:
         return element.text
 
     def get_attribute(self, attribute):
-        element = WebDriverWait(self.browser.driver, self.timeout).until(
-            EC.visibility_of_element_located(self.locator)
-        )
+        element = self.visibility_of_element_located()
         return element.get_attribute(attribute)
 
     def right_click(self):
@@ -87,8 +88,23 @@ class BaseElement:
             self.logger.error(f"Timeout while waiting for button '{self.description}' to be clickable")
             raise
 
-    def scroll_into_view_to_last_element(self, align_to_top):
+    def scroll_into_view(self, align_to_top):
         elements = self.browser.presence_of_all_elements_located(self.locator)
         last_element = elements[-1]
-        align = "true" if align_to_top else "false"
+        align = str(align_to_top).lower()
         self.browser.driver.execute_script(f"arguments[0].scrollIntoView({align});", last_element)
+
+    def is_exists(self) -> bool:
+        print(self.locator)
+        for i in list(self.locator):
+            print(i)
+            elements = WebDriverWait(self.browser, 10).until(
+                EC.presence_of_element_located(i)
+            )
+            if elements:
+                return True
+            else:
+                return False
+
+    def get_elements_by_locator(self):
+        return self.browser.presence_of_all_elements_located(self.locator)

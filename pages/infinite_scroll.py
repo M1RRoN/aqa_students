@@ -19,7 +19,7 @@ class InfiniteScrollPage(BasePage):
         paragraphs = self.browser.presence_of_all_elements_located(self.paragraph.locator)
 
         while len(paragraphs) < age:
-            self.paragraph.scroll_into_view_to_last_element(True)
+            self.paragraph.scroll_into_view(True)
             paragraphs = self.browser.presence_of_all_elements_located(self.paragraph.locator)
 
         logger.info(f"Scrolled to {len(paragraphs)} paragraphs!")

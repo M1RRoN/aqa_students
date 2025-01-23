@@ -1,6 +1,3 @@
-from selenium.webdriver.common.by import By
-
-from elements.button import Button
 from custom_elements.slider import Slider
 from pages.base_page import BasePage
 

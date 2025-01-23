@@ -12,7 +12,6 @@ class HoversPage(BasePage):
     ALL_PROFILE_LOC = "//*[@id='content']//div[contains(@class, 'figure')]"
     FIRST_PROFILE_LOC = "//*[@id='content']//div[contains(@class, 'figure')][1]"
     PROFILE_LINK_LOC = "//*[@id='content']//div[contains(@class, 'figcaption')]//a[contains(@href, '/users/{id}')]"
-    BUTTON_HOVERS_PAGE_LOC = "//*[@id='content']//a[contains(text(), 'Hovers')]"
 
     def __init__(self, browser):
         super().__init__(browser)
@@ -23,19 +22,22 @@ class HoversPage(BasePage):
         self.profile_link = WebElement(browser, self.PROFILE_LINK_LOC, "Hovers page -> Profile link")
 
     def view_profile(self, id: int):
-        original_locator = self.profile.locator
-        original_profile_link_locator = self.profile_link.locator
-        try:
-            self.profile.locator = (By.XPATH, self.PROFILE_LOC.format(id=id))
-            self.profile_link.locator = (By.XPATH, self.PROFILE_LINK_LOC.format(id=id))
-            avatar = self.profile.presence_of_element_located()
-            actions = ActionChains(self.browser.driver)
-            actions.move_to_element(avatar).perform()
-            hover_link = self.profile_link.element_to_be_clickable()
-            hover_link.click()
-        finally:
-            self.profile.locator = original_locator
-            self.profile_link.locator = original_profile_link_locator
+        profile_locator = self.format_locator(self.PROFILE_LOC, id=id)
+        profile_link_locator = self.format_locator(self.PROFILE_LINK_LOC, id=id)
+
+        profile = WebElement(self.browser, profile_locator, f"Hovers page -> Profile {id}")
+        profile_link = WebElement(self.browser, profile_link_locator, f"Hovers page -> Profile link {id}")
+
+        avatar = profile.presence_of_element_located()
+        actions = ActionChains(self.browser.driver)
+        actions.move_to_element(avatar).perform()
+        hover_link = profile_link.element_to_be_clickable()
+        hover_link.click()
 
     def get_all_profiles(self):
-        return self.browser.presence_of_all_elements_located(self.profile.locator)
+        profiles = self.browser.presence_of_all_elements_located(self.profile.locator)
+        return profiles
+
+    def format_locator(self, locator_template, **kwargs):
+        formatted_locator = locator_template.format(**kwargs)
+        return By.XPATH, formatted_locator

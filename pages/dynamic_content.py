@@ -17,18 +17,15 @@ class DynamicContentPage(BasePage):
         self.unique_element = WebElement(browser, self.UNIQUE_ELEMENT_LOC, "Dynamic Content -> unique element")
         self.image = WebElement(browser, self.DYNAMIC_IMAGE_LOC, "Dynamic Content -> images")
 
-    def page_is_open(self):
-        self.wait_for_open()
+    def refresh_page_while_not_find_identical_images(self, count_src):
+        src_list = self.get_all_image_sources()
 
-    def refresh_page_while_not_find_identical_images(self):
-        src_list = self.get_all_image_sources(self.image.locator)
-
-        while len(set(src_list)) == 3:
+        while len(set(src_list)) == count_src:
             self.browser.refresh()
-            src_list = self.get_all_image_sources(self.image.locator)
+            src_list = self.get_all_image_sources()
         return src_list
 
-    def get_all_image_sources(self, locator):
-        images = self.browser.presence_of_all_elements_located(locator)
+    def get_all_image_sources(self):
+        images = self.image.get_elements_by_locator()
         src_values = [img.get_attribute("src") for img in images if img.get_attribute("src")]
         return src_values

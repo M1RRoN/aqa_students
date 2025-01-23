@@ -1,14 +1,11 @@
-import time
 from pathlib import Path
 
-import pyautogui
 import pytest
-from selenium.webdriver.common.by import By
 
 from config.config_reader import ConfigReader
 from pages.main_page import MainPage
 from pages.upload import UploadPage
-from scripts import get_element_by_id
+from scripts import GET_ELEMENT_BY_ID
 
 
 @pytest.mark.parametrize("file_path", [Path("test_files/SteamSetup.exe")])
@@ -19,7 +16,7 @@ def test_upload_file(chrome_driver, file_path):
     main_page.go_to_file_upload_page()
 
     upload_page.upload_file(file_path)
-    file_name = chrome_driver.execute_script(get_element_by_id)
+    file_name = chrome_driver.execute_script(GET_ELEMENT_BY_ID)
 
     assert file_name.endswith(file_path.name), f"Expected: {file_name.endswith(file_path.name)}, Actual: '{file_name}'"
 

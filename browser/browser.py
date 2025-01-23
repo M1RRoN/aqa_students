@@ -1,4 +1,5 @@
-from selenium.common import NoSuchElementException
+from bs4 import BeautifulSoup
+from selenium.common import TimeoutException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 import logging
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class Browser:
-    timeout = ConfigReader().get("timeout")
+    TIMEOUT = ConfigReader().get("timeout")
 
     def __init__(self, driver: WebDriver):
         self._driver = driver
@@ -64,9 +65,9 @@ class Browser:
         alert.accept()
 
     def wait_alert(self):
-        logger.info(f"Waiting for alert to appear with timeout {self.timeout} seconds")
+        logger.info(f"Waiting for alert to appear with timeout {self.TIMEOUT} seconds")
         try:
-            WebDriverWait(self.driver, self.timeout).until(EC.alert_is_present())
+            WebDriverWait(self.driver, self.TIMEOUT).until(EC.alert_is_present())
         except Exception as e:
             logger.error(f"Alert did not appear: {e}")
             raise
@@ -82,9 +83,7 @@ class Browser:
     def execute_script(self, script: str, **kwargs):
         try:
             logger.info(f"Executing script: {script} with arguments: {kwargs}")
-
             formatted_script = script.format(**kwargs)
-
             return self.driver.execute_script(formatted_script)
 
         except Exception as e:
@@ -112,10 +111,12 @@ class Browser:
         return text
 
     def presence_of_all_elements_located(self, locator):
+        logger.info("Get elements")
         try:
-            elements = WebDriverWait(self.driver, self.timeout).until(
+            elements = WebDriverWait(self.driver, self.TIMEOUT).until(
                 EC.presence_of_all_elements_located(locator)
             )
             return elements
-        except NoSuchElementException:
-            logger.info(f"Element with locator: {locator} not found.")
+        except TimeoutException as e:
+            logger.error(f"Timeout while waiting for elements with locator: {locator}. Exception: {e}")
+            raise
