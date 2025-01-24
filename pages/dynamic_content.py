@@ -1,4 +1,5 @@
 from elements.label import Label
+from elements.multi_web_element import MultiWebElement
 from elements.web_element import WebElement
 from pages.base_page import BasePage
 
@@ -17,15 +18,27 @@ class DynamicContentPage(BasePage):
         self.unique_element = WebElement(browser, self.UNIQUE_ELEMENT_LOC, "Dynamic Content -> unique element")
         self.image = WebElement(browser, self.DYNAMIC_IMAGE_LOC, "Dynamic Content -> images")
 
+    def get_all_image_sources(self):
+        lambda_xpath_locator = lambda x: f"({self.image.locator[1]})[{x}]"
+        images_multi = MultiWebElement(
+            driver=self.browser,
+            lambda_xpath_locator=lambda_xpath_locator,
+            description="Image elements"
+        )
+
+        src_values = []
+        for image in images_multi:
+            src = image.get_attribute("src")
+            if src:
+                src_values.append(src)
+
+        return src_values
+
     def refresh_page_while_not_find_identical_images(self, count_src):
         src_list = self.get_all_image_sources()
 
         while len(set(src_list)) == count_src:
             self.browser.refresh()
             src_list = self.get_all_image_sources()
-        return src_list
 
-    def get_all_image_sources(self):
-        images = self.image.get_elements_by_locator()
-        src_values = [img.get_attribute("src") for img in images if img.get_attribute("src")]
-        return src_values
+        return src_list

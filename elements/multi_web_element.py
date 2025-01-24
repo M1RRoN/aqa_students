@@ -12,11 +12,11 @@ class MultiWebElement:
     DEFAULT_TIMEOUT = 10
 
     def __init__(
-        self,
-        driver: Browser,
-        lambda_xpath_locator: Callable,
-        description: Optional[str] = None,
-        timeout: Optional[int] = None,
+            self,
+            driver: Browser,
+            lambda_xpath_locator: Callable,
+            description: Optional[str] = None,
+            timeout: Optional[int] = None,
     ) -> None:
         """
         Initializer of MultiWebElement
@@ -56,7 +56,6 @@ class MultiWebElement:
             self.driver,
             self.lambda_xpath_locator(self.index),
             f"{self.description}[{self.index}]",
-            # timeout=self.timeout,
         )
 
         if not current_element.is_exists():
@@ -70,3 +69,22 @@ class MultiWebElement:
 
     def __repr__(self) -> str:
         return str(self)
+
+    def count(self) -> int:
+        count = 0
+        for _ in self:
+            count += 1
+        return count
+
+    def __getitem__(self, index):
+        if index < 0:
+            raise IndexError("Index cannot be negative")
+        element = WebElement(
+            self.driver,
+            self.lambda_xpath_locator(index + 1),
+            f"{self.description}[{index + 1}]",
+        )
+        if not element.is_exists():
+            raise IndexError(f"Element at index {index} does not exist")
+
+        return element

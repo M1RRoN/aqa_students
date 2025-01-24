@@ -5,11 +5,11 @@ from pages.base_page import BasePage
 
 
 class IframesPage(BasePage):
-    UNIQUE_ELEMENT_LOC = "//*[@id='frame1Wrapper']"
+    UNIQUE_ELEMENT_LOC = "frame1Wrapper"
 
     MENU_FRAMES_LOC = "//*[@id='item-2']//span[contains(@class, 'text') and contains(text(), 'Frames')]"
     MENU_NESTED_FRAMES_LOC = "//*[@id='item-3']//span[contains(@class, 'text') and contains(text(), 'Nested Frames')]"
-    PARENT_FRAME_LOC = "//*[@id='frame1']"
+    PARENT_FRAME_LOC = "frame1"
     CHILD_FRAME_LOC = "//iframe[@srcdoc='<p>Child Iframe</p>']"
     ALERTS_FRAME_WINDOWS_LOC = "//h5[contains(text(), 'Alerts, Frame & Windows')]"
     FRAME_BODY = "//body"

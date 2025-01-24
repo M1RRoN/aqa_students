@@ -5,7 +5,7 @@ import pytest
 from config.config_reader import ConfigReader
 from pages.main_page import MainPage
 from pages.upload import UploadPage
-from scripts import GET_ELEMENT_BY_ID
+from browser.scripts import GET_ELEMENT_BY_ID
 
 
 @pytest.mark.parametrize("file_path", [Path("test_files/SteamSetup.exe")])

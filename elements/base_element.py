@@ -37,10 +37,10 @@ class BaseElement:
 
     def presence_of_element_located(self):
         try:
-            elements = WebDriverWait(self.browser.driver, self.timeout).until(
+            element = WebDriverWait(self.browser.driver, self.timeout).until(
                 EC.presence_of_element_located(self.locator)
             )
-            return elements
+            return element
         except TimeoutException:
             self.logger.error(f"Timeout while waiting for element with locator: {self.locator}")
             raise
@@ -61,7 +61,7 @@ class BaseElement:
             element = self.element_to_be_clickable()
             self.logger.info(f"Clicking on button '{self.description}'")
             element.click()
-        except TimeoutException:
+        except Exception:
             self.logger.error(f"Timeout while waiting for button '{self.description}' to be clickable")
             raise
 
@@ -88,23 +88,16 @@ class BaseElement:
             self.logger.error(f"Timeout while waiting for button '{self.description}' to be clickable")
             raise
 
-    def scroll_into_view(self, align_to_top):
-        elements = self.browser.presence_of_all_elements_located(self.locator)
-        last_element = elements[-1]
+    def scroll_into_view(self, align_to_top=True):
         align = str(align_to_top).lower()
-        self.browser.driver.execute_script(f"arguments[0].scrollIntoView({align});", last_element)
+        element = self.presence_of_element_located()
+        self.browser.driver.execute_script(f"arguments[0].scrollIntoView({align});", element)
 
     def is_exists(self) -> bool:
-        print(self.locator)
-        for i in list(self.locator):
-            print(i)
-            elements = WebDriverWait(self.browser, 10).until(
-                EC.presence_of_element_located(i)
+        try:
+            WebDriverWait(self.browser.driver, self.timeout).until(
+                EC.presence_of_element_located(self.locator)
             )
-            if elements:
-                return True
-            else:
-                return False
-
-    def get_elements_by_locator(self):
-        return self.browser.presence_of_all_elements_located(self.locator)
+            return True
+        except (NoSuchElementException, TimeoutException):
+            return False

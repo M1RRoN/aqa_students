@@ -1,6 +1,7 @@
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 
+from elements.multi_web_element import MultiWebElement
 from elements.web_element import WebElement
 from pages.base_page import BasePage
 
@@ -35,8 +36,13 @@ class HoversPage(BasePage):
         hover_link.click()
 
     def get_all_profiles(self):
-        profiles = self.browser.presence_of_all_elements_located(self.profile.locator)
-        return profiles
+        xpath_locator = self.profile.locator[1]
+        lambda_xpath_locator = lambda x: f"({xpath_locator})[{x}]"
+        return MultiWebElement(
+            driver=self.browser,
+            lambda_xpath_locator=lambda_xpath_locator,
+            description="Profile elements"
+        )
 
     def format_locator(self, locator_template, **kwargs):
         formatted_locator = locator_template.format(**kwargs)

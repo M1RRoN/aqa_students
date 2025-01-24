@@ -62,7 +62,6 @@ class Browser:
         alert = self.switch_to_alert()
         logger.info(f"Sending keys in alert: {keys}")
         alert.send_keys(keys)
-        alert.accept()
 
     def wait_alert(self):
         logger.info(f"Waiting for alert to appear with timeout {self.TIMEOUT} seconds")
@@ -109,14 +108,3 @@ class Browser:
         logging.info("Get alert text")
         text = alert.text
         return text
-
-    def presence_of_all_elements_located(self, locator):
-        logger.info("Get elements")
-        try:
-            elements = WebDriverWait(self.driver, self.TIMEOUT).until(
-                EC.presence_of_all_elements_located(locator)
-            )
-            return elements
-        except TimeoutException as e:
-            logger.error(f"Timeout while waiting for elements with locator: {locator}. Exception: {e}")
-            raise

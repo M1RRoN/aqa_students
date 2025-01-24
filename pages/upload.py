@@ -8,7 +8,7 @@ from pages.base_page import BasePage
 
 
 class UploadPage(BasePage):
-    UNIQUE_ELEMENT_LOC = "//*[@id='file-upload']"
+    UNIQUE_ELEMENT_LOC = "file-upload"
 
     BUTTON_SELECT_FILE_LOC = "file-upload"
     BUTTON_UPLOAD_LOC = "file-submit"

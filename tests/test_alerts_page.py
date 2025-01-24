@@ -4,7 +4,7 @@ from browser.browser_factory import BrowserName
 from config.config_reader import ConfigReader
 from pages.js_alerts import AlertsPage
 from pages.main_page import MainPage
-from scripts import CLICK_ON_ALERT, SEND_KEYS_IN_PROMPT
+from browser.scripts import CLICK_ON_ALERT, SEND_KEYS_IN_PROMPT
 
 
 @pytest.mark.parametrize("driver", [browser for browser in BrowserName], indirect=True)
@@ -39,6 +39,7 @@ def test_accept_alert(driver, get_config):
     expected_alert_text = "I am a JS prompt"
     assert "I am a JS prompt" == alert_text, f"Expected alert text: '{expected_alert_text}', but got: '{alert_text}'"
     driver.alert_send_keys("done")
+    driver.alert_accept()
     text = alert_page.get_result_text()
     expected_text = "You entered: done"
     assert expected_text == text, f"Expected result text: '{expected_text}', but got: '{text}'"
