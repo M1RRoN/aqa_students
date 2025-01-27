@@ -1,19 +1,17 @@
-from pydantic import BaseModel, Field, field_validator, model_validator
+from typing import ClassVar
+
+from pydantic import BaseModel, Field, model_validator, ConfigDict
+
+MIN_MARK = 2
+MAX_MARK = 5
 
 
 class GroupStatistics(BaseModel):
-    avg_mark: float = Field(alias="avgMark")
-    min_mark: float = Field(alias="minMark")
-    max_mark: float = Field(alias="maxMark")
+    avg_mark: float = Field(alias="avgMark", ge=MIN_MARK, le=MAX_MARK)
+    min_mark: float = Field(alias="minMark", ge=MIN_MARK, le=MAX_MARK)
+    max_mark: float = Field(alias="maxMark", ge=MIN_MARK, le=MAX_MARK)
 
-    class Config:
-        populate_by_name = True
-
-    @field_validator("avg_mark", "min_mark", "max_mark")
-    def check_marks_range(cls, value):
-        if not (2.0 <= value <= 5.0):
-            raise ValueError("Оценка должна быть в диапазоне от 2.0 до 5.0")
-        return value
+    model_config = ConfigDict(populate_by_name=True)
 
     @model_validator(mode="after")
     def check_avg_mark(cls, model: "GroupStatistics"):
