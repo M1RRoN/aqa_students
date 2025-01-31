@@ -1,4 +1,4 @@
-import pyautogui
+# import pyautogui
 
 from elements.button import Button
 from elements.label import Label
@@ -20,10 +20,10 @@ class BasicAuthPage(BasePage):
     def get_result_text(self):
         text = self.result_after_auth.get_text()
         return text
-
-    def write_login_and_password_in_form(self, username, password):
-        pyautogui.write(username)
-        pyautogui.press("tab")
-
-        pyautogui.write(password)
-        pyautogui.press("enter")
+    #
+    # def write_login_and_password_in_form(self, username, password):
+    #     pyautogui.write(username)
+    #     pyautogui.press("tab")
+    #
+    #     pyautogui.write(password)
+    #     pyautogui.press("enter")
