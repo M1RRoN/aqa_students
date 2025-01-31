@@ -3,5 +3,5 @@
   "demoqa_url": "https://demoqa.com/",
   "profile_url": "https://the-internet.herokuapp.com/users/{id}",
   "timeout": 10,
-  "headless": false
+  "headless": true
 }
