@@ -1,5 +1,3 @@
-from bs4 import BeautifulSoup
-from selenium.common import TimeoutException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 import logging
