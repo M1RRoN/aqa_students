@@ -35,8 +35,8 @@ class BrowserFactory:
         if browser_name == BrowserName.CHROME:
             options = ChromeOptions()
             apply_headless(options)
-            # chrome_driver_path = "/usr/bin/chromedriver"
-            chrome_driver_path = "/usr/lib/chromium-browser/chromedriver"
+            chrome_driver_path = "/usr/bin/chromedriver"
+            # chrome_driver_path = "/usr/lib/chromium-browser/chromedriver"
             return webdriver.Chrome(service=ChromeService(executable_path=chrome_driver_path), options=options)
 
         # elif browser_name == BrowserName.FIREFOX:
