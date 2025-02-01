@@ -16,8 +16,8 @@ from config.config_reader import ConfigReader
 
 class BrowserName(StrEnum):
     CHROME = "chrome"
-    FIREFOX = "firefox"
-    EDGE = "edge"
+    # FIREFOX = "firefox"
+    # EDGE = "edge"
 
 
 class BrowserFactory:
@@ -26,20 +26,24 @@ class BrowserFactory:
         headless = ConfigReader().get("headless")
 
         def apply_headless(options):
+            options.add_argument('--headless')
+            options.add_argument('--no-sandbox')
+
             if headless:
                 options.add_argument("--headless")
 
         if browser_name == BrowserName.CHROME:
             options = ChromeOptions()
             apply_headless(options)
-            return webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+            chrome_driver_path = "/usr/bin/chromedriver"
+            return webdriver.Chrome(service=ChromeService(executable_path=chrome_driver_path), options=options)
 
-        elif browser_name == BrowserName.FIREFOX:
-            options = FirefoxOptions()
-            apply_headless(options)
-            return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=options)
-
-        elif browser_name == BrowserName.EDGE:
-            options = EdgeOptions()
-            apply_headless(options)
-            return webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)
+        # elif browser_name == BrowserName.FIREFOX:
+        #     options = FirefoxOptions()
+        #     apply_headless(options)
+        #     return webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()), options=options)
+        #
+        # elif browser_name == BrowserName.EDGE:
+        #     options = EdgeOptions()
+        #     apply_headless(options)
+        #     return webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()), options=options)

@@ -21,7 +21,7 @@ def driver(request):
 
 
 @pytest.fixture()
-def chrome_driver():
+def driver():
     web_driver = BrowserFactory.get_browser(browser_name=BrowserName.CHROME)
     browser = Browser(driver=web_driver)
     yield browser

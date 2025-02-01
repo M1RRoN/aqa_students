@@ -9,14 +9,14 @@ from browser.scripts import GET_ELEMENT_BY_ID
 
 
 @pytest.mark.parametrize("file_path", [Path("test_files/SteamSetup.exe")])
-def test_upload_file(chrome_driver, file_path):
-    main_page = MainPage(chrome_driver)
-    upload_page = UploadPage(chrome_driver)
-    chrome_driver.get(ConfigReader().get("herokuapp_url"))
+def test_upload_file(driver, file_path):
+    main_page = MainPage(driver)
+    upload_page = UploadPage(driver)
+    driver.get(ConfigReader().get("herokuapp_url"))
     main_page.go_to_file_upload_page()
 
     upload_page.upload_file(file_path)
-    file_name = chrome_driver.execute_script(GET_ELEMENT_BY_ID)
+    file_name = driver.execute_script(GET_ELEMENT_BY_ID)
 
     assert file_name.endswith(file_path.name), f"Expected: {file_name.endswith(file_path.name)}, Actual: '{file_name}'"
 
@@ -32,10 +32,10 @@ def test_upload_file(chrome_driver, file_path):
 
 
 @pytest.mark.parametrize("file_path", [Path("test_files/SteamSetup.exe")])
-def test_upload_dialog_window(chrome_driver, file_path):
-    main_page = MainPage(chrome_driver)
-    upload_page = UploadPage(chrome_driver)
-    chrome_driver.get(ConfigReader().get("herokuapp_url"))
+def test_upload_dialog_window(driver, file_path):
+    main_page = MainPage(driver)
+    upload_page = UploadPage(driver)
+    driver.get(ConfigReader().get("herokuapp_url"))
     main_page.go_to_file_upload_page()
 
     upload_page.click_on_drag_and_drop()
