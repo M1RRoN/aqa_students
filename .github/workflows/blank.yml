@@ -1,0 +1,39 @@
+name: Python CI Pipeline
+
+on:
+  push:
+    branches:
+      - feature/proxy_pattern
+  pull_request:
+    branches:
+      - feature/proxy_pattern
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: feature/proxy_pattern
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python3 -m venv venv
+        . venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        . venv/bin/activate
+        pytest /mnt/c/PycharmProjects/aqa_students
+
+    - name: Deploy application
+      run: |
+        echo 'Deploying application...'
