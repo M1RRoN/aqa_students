@@ -33,7 +33,7 @@ jobs:
     - name: Run tests
       run: |
         . venv/bin/activate
-        pytest /mnt/c/PycharmProjects/aqa_students
+        pytest
 
     - name: Deploy application
       run: |
